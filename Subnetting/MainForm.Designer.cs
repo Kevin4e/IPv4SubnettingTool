@@ -51,7 +51,7 @@
             btnGenerateEntries = new Button();
             btnFilterTable = new Button();
             grpGenerate = new GroupBox();
-            grpFiltering = new GroupBox();
+            grpOthers = new GroupBox();
             btnClearTable = new Button();
             chkDisplayPowerOfTwo = new CheckBox();
             lblEntriesCount = new Label();
@@ -60,7 +60,7 @@
             ((System.ComponentModel.ISupportInitialize)nudCIDR).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudNumberOfRandomEntriesToAdd).BeginInit();
             grpGenerate.SuspendLayout();
-            grpFiltering.SuspendLayout();
+            grpOthers.SuspendLayout();
             SuspendLayout();
             // 
             // dgvSubetting
@@ -233,7 +233,7 @@
             // 
             // btnGenerateEntries
             // 
-            btnGenerateEntries.Location = new Point(65, 91);
+            btnGenerateEntries.Location = new Point(65, 93);
             btnGenerateEntries.Name = "btnGenerateEntries";
             btnGenerateEntries.Size = new Size(132, 25);
             btnGenerateEntries.TabIndex = 34;
@@ -243,7 +243,7 @@
             // 
             // btnFilterTable
             // 
-            btnFilterTable.Location = new Point(35, 22);
+            btnFilterTable.Location = new Point(31, 21);
             btnFilterTable.Name = "btnFilterTable";
             btnFilterTable.Size = new Size(162, 43);
             btnFilterTable.TabIndex = 35;
@@ -264,20 +264,20 @@
             grpGenerate.TabStop = false;
             grpGenerate.Text = "Generate";
             // 
-            // grpFiltering
+            // grpOthers
             // 
-            grpFiltering.Controls.Add(btnClearTable);
-            grpFiltering.Controls.Add(btnFilterTable);
-            grpFiltering.Location = new Point(708, 455);
-            grpFiltering.Name = "grpFiltering";
-            grpFiltering.Size = new Size(223, 127);
-            grpFiltering.TabIndex = 37;
-            grpFiltering.TabStop = false;
-            grpFiltering.Text = "Filtering";
+            grpOthers.Controls.Add(btnClearTable);
+            grpOthers.Controls.Add(btnFilterTable);
+            grpOthers.Location = new Point(708, 455);
+            grpOthers.Name = "grpOthers";
+            grpOthers.Size = new Size(223, 127);
+            grpOthers.TabIndex = 37;
+            grpOthers.TabStop = false;
+            grpOthers.Text = "Others";
             // 
             // btnClearTable
             // 
-            btnClearTable.Location = new Point(35, 71);
+            btnClearTable.Location = new Point(31, 72);
             btnClearTable.Name = "btnClearTable";
             btnClearTable.Size = new Size(162, 43);
             btnClearTable.TabIndex = 36;
@@ -313,14 +313,14 @@
             ClientSize = new Size(943, 592);
             Controls.Add(chkDisplayPowerOfTwo);
             Controls.Add(lblEntriesCount);
-            Controls.Add(grpFiltering);
+            Controls.Add(grpOthers);
             Controls.Add(grpGenerate);
             Controls.Add(grpInputData);
             Controls.Add(dgvSubetting);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "MainForm";
-            Text = "IPv4 Subnetting Tool by Kevin4e | v1.0.0";
+            Text = "IPv4 Subnetting Tool by Kevin4e | v1.0.1";
             Load += MainForm_Load;
             ((System.ComponentModel.ISupportInitialize)dgvSubetting).EndInit();
             grpInputData.ResumeLayout(false);
@@ -329,7 +329,7 @@
             ((System.ComponentModel.ISupportInitialize)nudNumberOfRandomEntriesToAdd).EndInit();
             grpGenerate.ResumeLayout(false);
             grpGenerate.PerformLayout();
-            grpFiltering.ResumeLayout(false);
+            grpOthers.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -357,7 +357,7 @@
         private DataGridViewTextBoxColumn colNumberOfSubnets;
         private DataGridViewTextBoxColumn colNumberOfHosts;
         private GroupBox grpGenerate;
-        private GroupBox grpFiltering;
+        private GroupBox grpOthers;
         private NumericUpDown nudCIDR;
         private Label lblWarning;
         private Button btnClearTable;
