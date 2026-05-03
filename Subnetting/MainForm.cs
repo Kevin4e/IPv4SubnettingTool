@@ -10,14 +10,14 @@ namespace Subnetting
     {
         private TextBox nudTextBox;
 
-        List<IPv4Network> allDataPerRow = new List<IPv4Network>();
-        List<IPv4Network> filteredDataPerRow = new List<IPv4Network>();
+        private List<IPv4Network> allDataPerRow = new List<IPv4Network>();
+        private List<IPv4Network> filteredDataPerRow = new List<IPv4Network>();
 
-        bool displayPowerOfTwo;
+        private bool displayPowerOfTwo;
 
         // Default values
-        byte[] Bytes = { 192, 168, 1, 0 };
-        byte CIDR = 24;
+        private byte[] Bytes = { 192, 168, 1, 0 };
+        private byte CIDR = 24;
 
         /* Properties */
 
@@ -81,11 +81,8 @@ namespace Subnetting
                 {
                     IPv4Network ipNet = DataToUse[i];
 
-                    byte subnetsExp = Helpers.GetExponent(ipNet.NumberOfSubnets);
-                    byte hostsExp = Helpers.GetExponent(ipNet.NumberOfHosts + 2);
-
-                    dgvSubetting.Rows[i].Cells[7].Value = $"2^{subnetsExp}";
-                    dgvSubetting.Rows[i].Cells[8].Value = $"(2^{hostsExp}) - 2";
+                    dgvSubetting.Rows[i].Cells[7].Value = Helpers.FormatNumberOfSubnets(ipNet.NumberOfSubnets);
+                    dgvSubetting.Rows[i].Cells[8].Value = Helpers.FormatNumberOfHosts(ipNet.NumberOfHosts, ipNet.CIDR);
                 }
             }
             else
@@ -106,14 +103,8 @@ namespace Subnetting
             nudTextBox = (TextBox)nudCIDR.Controls[1];
             nudTextBox.TextChanged += nudTextBox_TextChanged;
         }
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            lblEntriesCount.Text = "Showing: 0 of 0 entries";
-        }
-        private void txtIPAddress_TextChanged(object sender, EventArgs e)
-        {
-            ValidateInput();
-        }
+        private void MainForm_Load(object sender, EventArgs e) => lblEntriesCount.Text = "Showing: 0 of 0 entries";
+        private void txtIPAddress_TextChanged(object sender, EventArgs e) => ValidateInput();
         private void nudCIDR_ValueChanged(object sender, EventArgs e)
         {
             CIDR = (byte)nudCIDR.Value;
@@ -145,15 +136,15 @@ namespace Subnetting
             txtIPAddress.Text = Helpers.GenerateRandomIP();
 
             byte minCIDR = Helpers.GetClassfulCIDR(new IPv4(Helpers.ConvertIPToBytes(txtIPAddress.Text)));
-            byte CIDR_ = Helpers.GenerateRandomCIDR(minCIDR);
+            byte CIDR = Helpers.GenerateRandomCIDR(minCIDR);
 
-            nudCIDR.Value = CIDR_;
+            nudCIDR.Value = CIDR;
         }
         private void btnGenerateEntries_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < nudNumberOfRandomEntriesToAdd.Value; ++i)
             {
-                string[] bytesStr = (Helpers.GenerateRandomIP()).Split('.'); // Generate a random IP and split it into 4 string octets
+                string[] bytesStr = Helpers.GenerateRandomIP().Split('.'); // Generate a random IP and split it into 4 string octets
                 byte[] bytes = Array.ConvertAll(bytesStr, byte.Parse);
 
                 IPv4 ipAddr = new IPv4(bytes);
@@ -183,11 +174,11 @@ namespace Subnetting
 
         private void chkDisplayPowerOfTwo_CheckedChanged(object sender, EventArgs e)
         {
-            List<IPv4Network> DataToUse = btnFilterTable.Enabled ? allDataPerRow : filteredDataPerRow;
+            List<IPv4Network> dataToDisplay = btnFilterTable.Enabled ? allDataPerRow : filteredDataPerRow;
 
             displayPowerOfTwo = chkDisplayPowerOfTwo.Checked;
 
-            DisplaySubnetsHosts(DataToUse, displayPowerOfTwo);
+            DisplaySubnetsHosts(dataToDisplay, displayPowerOfTwo);
         }
     }
 }

@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace Subnetting
 {
-    internal class Helpers
+    internal static class Helpers
     {
-        static Random gen = new Random();
-
         /* 
          *  Generates a random IP address in string format
          *  
@@ -21,24 +19,28 @@ namespace Subnetting
          */
         public static string GenerateRandomIP()
         {
-            byte[] bytes = new byte[4];
-
-            int startIndex = 1;
-
             byte firstByte;
 
             do
-                firstByte = (byte)gen.Next(0, 256);
+            {
+                firstByte = GenerateRandomByte();
+            }
             while (firstByte == 127 || (firstByte >= 224));
 
+            byte[] bytes = new byte[4];
+
             bytes[0] = firstByte;
+
+            int startIndex = 1;
 
             if (firstByte == 169)
             {
                 byte secondByte;
 
                 do
-                    secondByte = (byte)gen.Next(0, 256);
+                {
+                    secondByte = GenerateRandomByte();
+                }
                 while (secondByte == 254);
 
                 bytes[1] = secondByte;
@@ -47,16 +49,15 @@ namespace Subnetting
             }
 
             for (int i = startIndex; i < 4; ++i)
-                bytes[i] = (byte)gen.Next(0, 256);
+            {
+                bytes[i] = GenerateRandomByte();
+            }
 
             return string.Join('.', bytes);
         }
 
         // Generates a random CIDR with a minimum value (numerically)
-        public static byte GenerateRandomCIDR(byte minCIDR)
-        {
-            return (byte)gen.Next(minCIDR, 33);
-        }
+        public static byte GenerateRandomCIDR(byte minCIDR) => GenerateRandomByte(minCIDR, 33);
 
         // Returns octects (byte) from an IP address (string)
         // If the IP is not valid, it returns an empty collection
@@ -65,7 +66,7 @@ namespace Subnetting
             string[] bytesStr = ip.Split('.');
 
             if (bytesStr.Length != 4)
-                return Array.Empty<Byte>();
+                return Array.Empty<byte>();
 
             byte[] bytes;
 
@@ -75,7 +76,7 @@ namespace Subnetting
             }
             catch (Exception)
             {
-                return Array.Empty<Byte>();
+                return Array.Empty<byte>();
             }
 
             return bytes;
@@ -92,10 +93,7 @@ namespace Subnetting
         }
 
         // Removes leading zero's from a string and returns the modified copy
-        public static string RemoveLeadingZeros(string s)
-        {
-            return (byte.Parse(s)).ToString();
-        }
+        public static string RemoveLeadingZeros(string s) => byte.Parse(s).ToString();
 
         // Removes leading zero's from an IP address for each octect
         public static string NormalizeIP(string ip)
@@ -103,15 +101,32 @@ namespace Subnetting
             string[] bytes = ip.Split('.');
 
             for (int i = 0; i < 4; ++i)
+            {
                 bytes[i] = RemoveLeadingZeros(bytes[i]);
+            }
 
             return string.Join(".", bytes);
         }
 
         // Returns the exponent y such that 2^y equals the given number
-        public static byte GetExponent(ulong n)
+        public static byte GetExponent(ulong n) => (byte)Math.Log2(n);
+
+        // Generates a random byte
+        public static byte GenerateRandomByte(byte min = byte.MinValue, int max = byte.MaxValue + 1)
+            => (byte)Random.Shared.Next(min, max);
+
+        public static string FormatNumberOfHosts(ulong numberOfHosts, byte CIDR)
         {
-            return (byte)Math.Log2(n);
+            string format;
+
+            if (CIDR == 31 || CIDR == 32)
+                format = $"2^{GetExponent(numberOfHosts)}";
+            else
+                format = $"(2^{GetExponent(numberOfHosts + 2)}) - 2";
+
+            return format;
         }
+
+        public static string FormatNumberOfSubnets(ulong numberOfSubnets) => $"2^{GetExponent(numberOfSubnets)}";
     }
 }

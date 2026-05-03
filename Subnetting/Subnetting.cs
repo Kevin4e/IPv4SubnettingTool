@@ -9,15 +9,42 @@ namespace Subnetting
     public class IPv4
     {
         public byte[] Bytes { get; }
-        public IPv4()
-        {
-            Bytes = new byte[4];
-        }
-        public IPv4(byte[] bytes) : this()
-        {
-            Bytes = (byte[])bytes.Clone();
-        }
+        public IPv4() : this(new byte[4]) {}
+        public IPv4(byte[] bytes) => Bytes = (byte[])bytes.Clone();
         public string Address => string.Join('.', Bytes);
+
+        // AND operator
+        public static IPv4 operator &(IPv4 a, IPv4 b)
+        {
+            IPv4 result = new IPv4();
+
+            for (int i = 0; i < 4; i++)
+                result.Bytes[i] = (byte)(a.Bytes[i] & b.Bytes[i]);
+
+            return result;
+        }
+
+        // OR operator
+        public static IPv4 operator |(IPv4 a, IPv4 b)
+        {
+            IPv4 result = new IPv4();
+
+            for (int i = 0; i < 4; i++)
+                result.Bytes[i] = (byte)(a.Bytes[i] | b.Bytes[i]);
+
+            return result;
+        }
+
+        // NOT operator: flips all the bits
+        public static IPv4 operator ~(IPv4 a)
+        {
+            IPv4 result = new IPv4();
+
+            for (int i = 0; i < 4; i++)
+                result.Bytes[i] = (byte)~a.Bytes[i];
+
+            return result;
+        }
     }
     public class IPv4Network
     {
@@ -66,7 +93,7 @@ namespace Subnetting
         {
             int quotient = CIDR / 8;
 
-            int i, j;
+            int i;
 
             for (i = 0; i < quotient; ++i)
                 SubnetMask.Bytes[i] = 255;
@@ -79,7 +106,7 @@ namespace Subnetting
             byte val = 0;
             byte mul = 128;
 
-            for (j = 0; j < carryOver; ++j)
+            for (int j = 0; j < carryOver; ++j)
             {
                 val += mul;
                 mul /= 2;
@@ -87,39 +114,10 @@ namespace Subnetting
 
             SubnetMask.Bytes[i] = val;
         }
-        private void ComputeNetworkIP()
-        {
-            if (Classes.TryGetValue(ipClass, out byte value)) // Get the CIDR based on the IP's class
-            {
-                NetworkIP = new IPv4(IPAddress.Bytes); // Copy the IP address to the Network one
+        private void ComputeNetworkIP() => NetworkIP = IPAddress & SubnetMask;
+        private void ComputeSubnetIP() => SubnetIP = IPAddress & SubnetMask;
+        private void ComputeSubnetBroadcastIP() => SubnetBroadcastIP = NetworkIP | ~SubnetMask;
 
-                int quotient = value / 8;
-
-                int i;
-                for (i = 3; i >= quotient; --i) // Starting from the last byte until 'quotient'
-                    NetworkIP.Bytes[i] = 0; // Reset each byte
-            }
-        }
-        private void ComputeSubnetIP()
-        {
-            Array.Copy(IPAddress.Bytes, SubnetIP.Bytes, 4);
-
-            if (CIDR == 32)
-                return;
-
-            for (int i = 0; i < 4; ++i)
-                SubnetIP.Bytes[i] &= SubnetMask.Bytes[i];
-        }
-        private void ComputeSubnetBroadcastIP()
-        {
-            Array.Copy(IPAddress.Bytes, SubnetBroadcastIP.Bytes, 4);
-
-            if (CIDR == 32)
-                return;
-
-            for (int i = 0; i < 4; ++i)
-                SubnetBroadcastIP.Bytes[i] |= (byte)(255 - SubnetMask.Bytes[i]);
-        }
         private void CalcNumberOfHosts()
         {
             if (CIDR == 31) NumberOfHosts = 2;
@@ -129,9 +127,7 @@ namespace Subnetting
         private void CalcNumberOfSubnets()
         {
             if (Classes.TryGetValue(ipClass, out byte value))
-            {
                 NumberOfSubnets = (ulong)Math.Pow(2.0, CIDR - value); // Explicit casting required
-            }
         }
         private void Resolve()
         {
@@ -183,8 +179,8 @@ namespace Subnetting
                 NetworkIP.Address,
                 SubnetIP.Address,
                 SubnetBroadcastIP.Address,
-                displayPowerOfTwo? $"2^{Helpers.GetExponent(NumberOfSubnets)}" : NumberOfSubnets.ToString(), // Get power of two if displayPowerOfTwo is true
-                displayPowerOfTwo? $"2^({Helpers.GetExponent(NumberOfHosts + 2)}) - 2" : NumberOfHosts.ToString() // Same here, in addition to -2
+                displayPowerOfTwo ? Helpers.FormatNumberOfSubnets(NumberOfSubnets) : NumberOfSubnets.ToString(), // Get power of two if displayPowerOfTwo is true
+                displayPowerOfTwo ? Helpers.FormatNumberOfHosts(NumberOfHosts, CIDR) : NumberOfHosts.ToString() // Same here
             };
         }
         public IPv4Network(IPv4 IPAddr, byte CIDR_)

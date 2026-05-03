@@ -14,10 +14,13 @@ namespace Subnetting
     {
         private MainForm mainForm;
 
-        private bool IsIPValid(string s)
+        public FilteringForm(MainForm form)
         {
-            return Helpers.ConvertIPToBytes(s).Length == 4 && s == Helpers.NormalizeIP(s);
+            InitializeComponent();
+            mainForm = form;
         }
+
+        private bool IsIPValid(string s) => Helpers.ConvertIPToBytes(s).Length == 4 && s == Helpers.NormalizeIP(s);
         private void FillTable(List<IPv4Network> data)
         {
             mainForm.DgvSubnetting.Rows.Clear();
@@ -39,7 +42,9 @@ namespace Subnetting
                     allValid = false;
                 }
                 else
+                {
                     lblIPAddressFilterWarning.Visible = false;
+                }
             }
 
             if (chkCIDR.Checked)
@@ -51,7 +56,9 @@ namespace Subnetting
                     allValid = false;
                 }
                 else
+                {
                     lblCIDRFilterWarning.Visible = false;
+                }
             }
 
             if (chkClass.Checked)
@@ -63,7 +70,9 @@ namespace Subnetting
                     allValid = false;
                 }
                 else
+                {
                     lblClassFilterWarning.Visible = false;
+                }
             }
 
             if (chkSubnetMask.Checked)
@@ -74,7 +83,9 @@ namespace Subnetting
                     allValid = false;
                 }
                 else
+                {
                     lblSubnetMaskFilterWarning.Visible = false;
+                }
             }
 
             if (chkNetworkIP.Checked)
@@ -85,7 +96,9 @@ namespace Subnetting
                     allValid = false;
                 }
                 else
+                {
                     lblNetworkIPFilterWarning.Visible = false;
+                }
             }
 
             if (chkSubnetIP.Checked)
@@ -96,7 +109,9 @@ namespace Subnetting
                     allValid = false;
                 }
                 else
+                {
                     lblSubnetIPFilterWarning.Visible = false;
+                }
             }
 
             if (chkSubnetBroadcastIP.Checked)
@@ -107,7 +122,9 @@ namespace Subnetting
                     allValid = false;
                 }
                 else
+                {
                     lblSubnetBroadcastIPFilterWarning.Visible = false;
+                }
             }
 
             if (chkNumberOfSubnets.Checked)
@@ -119,7 +136,9 @@ namespace Subnetting
                     allValid = false;
                 }
                 else
+                {
                     lblNumberOfSubnets.Visible = false;
+                }
             }
 
             if (chkNumberOfHosts.Checked)
@@ -131,16 +150,14 @@ namespace Subnetting
                     allValid = false;
                 }
                 else
+                {
                     lblNumberOfHosts.Visible = false;
+                }
             }
 
             btnApply.Enabled = allValid;
         }
-        public FilteringForm(MainForm form)
-        {
-            InitializeComponent();
-            mainForm = form;
-        }
+        
         private void FilteringForm_Load(object sender, EventArgs e)
         {
             lblIPAddressFilterWarning.Text = "⚠️";
@@ -226,50 +243,16 @@ namespace Subnetting
             if (!chkNumberOfHosts.Checked) lblNumberOfHosts.Visible = false;
             ValidateInput();
         }
-        private void txtIPAddressFilter_TextChanged(object sender, EventArgs e)
-        {
-            ValidateInput();
-        }
+        private void txtIPAddressFilter_TextChanged(object sender, EventArgs e) => ValidateInput();
+        private void txtCIDRFilter_TextChanged(object sender, EventArgs e) => ValidateInput();
+        private void txtClassFilter_TextChanged(object sender, EventArgs e) => ValidateInput();
+        private void txtSubnetMaskFilter_TextChanged(object sender, EventArgs e) => ValidateInput();
+        private void txtNetworkIPFilter_TextChanged(object sender, EventArgs e) => ValidateInput();
+        private void txtSubnetIPFilter_TextChanged(object sender, EventArgs e) => ValidateInput();
+        private void txtSubnetBroadcastIPFilter_TextChanged(object sender, EventArgs e) => ValidateInput();
+        private void txtNumberOfSubnetsFilter_TextChanged(object sender, EventArgs e) => ValidateInput();
+        private void txtNumberOfHostsFilter_TextChanged(object sender, EventArgs e) => ValidateInput();
 
-        private void txtCIDRFilter_TextChanged(object sender, EventArgs e)
-        {
-            ValidateInput();
-        }
-
-        private void txtClassFilter_TextChanged(object sender, EventArgs e)
-        {
-            ValidateInput();
-        }
-
-        private void txtSubnetMaskFilter_TextChanged(object sender, EventArgs e)
-        {
-            ValidateInput();
-        }
-
-        private void txtNetworkIPFilter_TextChanged(object sender, EventArgs e)
-        {
-            ValidateInput();
-        }
-
-        private void txtSubnetIPFilter_TextChanged(object sender, EventArgs e)
-        {
-            ValidateInput();
-        }
-
-        private void txtSubnetBroadcastIPFilter_TextChanged(object sender, EventArgs e)
-        {
-            ValidateInput();
-        }
-
-        private void txtNumberOfSubnetsFilter_TextChanged(object sender, EventArgs e)
-        {
-            ValidateInput();
-        }
-
-        private void txtNumberOfHostsFilter_TextChanged(object sender, EventArgs e)
-        {
-            ValidateInput();
-        }
         private void btnApply_Click(object sender, EventArgs e)
         {
             mainForm.FilteredDataPerRow.Clear(); // Clear filtered list before using it
